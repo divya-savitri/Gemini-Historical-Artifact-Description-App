@@ -1,45 +1,42 @@
 import streamlit as st
-from google import genai
 from PIL import Image
-import os
-from dotenv import load_dotenv
+from transformers import BlipProcessor, BlipForConditionalGeneration
+import torch
 
-# Load API key
-load_dotenv()
-api_key = os.getenv("GOOGLE_API_KEY")
-
-if not api_key:
-    st.error("API Key not found in .env file")
-    st.stop()
-
-# Create client
-client = genai.Client(api_key=api_key)
-
+# Streamlit page setup
+st.set_page_config(page_title="Gemini Historical Artifact Description App")
 st.title("🏺 Gemini Historical Artifact Description App")
+st.write("Upload an artifact image and get a detailed AI-generated description.")
 
-prompt = st.text_input("Describe")
+# Load BLIP model (cached for speed)
+@st.cache_resource
+def load_model():
+    processor = BlipProcessor.from_pretrained("Salesforce/blip-image-captioning-base")
+    model = BlipForConditionalGeneration.from_pretrained("Salesforce/blip-image-captioning-base")
+    return processor, model
 
-uploaded_file = st.file_uploader(
-    "Upload Artifact Image",
-    type=["jpg", "jpeg", "png"]
-)
+processor, model = load_model()
 
+# Input prompt
+prompt = st.text_input("Describe", "Enter a description prompt for this artifact")
+
+# File uploader
+uploaded_file = st.file_uploader("Upload Artifact Image", type=["jpg", "jpeg", "png"])
+
+# Generate description button
 if st.button("Generate Artifact Description"):
+    if uploaded_file is not None and prompt.strip() != "":
+        image = Image.open(uploaded_file).convert("RGB")
 
-    if uploaded_file and prompt:
+        with st.spinner("Analyzing artifact..."):
+            # Process image + prompt
+            inputs = processor(image, prompt, return_tensors="pt")
+            output = model.generate(**inputs)
+            description = processor.decode(output[0], skip_special_tokens=True)
 
-        image = Image.open(uploaded_file)
-
-        with st.spinner("Analyzing Artifact..."):
-
-            response = client.models.generate_content(
-                model="gemini-2.0-flash",
-                contents=[prompt, image]
-            )
-
-            st.image(image, use_container_width=True)
-            st.subheader("Artifact Description:")
-            st.write(response.text)
-
+        # Display uploaded image and AI description
+        st.image(image, caption="Uploaded Artifact", use_container_width=True)
+        st.subheader("Artifact Description:")
+        st.write(description)
     else:
-        st.warning("Please enter prompt and upload image.")
+        st.warning("Please enter a prompt and upload an image.")

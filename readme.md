@@ -1,22 +1,56 @@
-# 🏺 Historic Artifact Analyzer
+# 🏺 Gemini Historical Artifact Description App
 
-This project analyzes historical artifact images and generates descriptions using an AI vision-language model.
+A Streamlit web application that generates detailed descriptions for historical artifacts from uploaded images.
 
-## Tech Stack
-- Python
-- Streamlit
-- HuggingFace Transformers
-- BLIP Image Captioning Model
+---
 
-## How to Run
+## 📌 Project Overview
 
-1. Install dependencies:
-pip install -r requirements.txt
+This application allows users to:
 
-2. Run:
-streamlit run app.py
+- Input a descriptive prompt for the artifact
+- Upload an image of a historical artifact
+- Generate an AI-based description using a Vision-Language model
+- Display both the uploaded image and the generated description in a clean interface
 
-## Features
-- Upload artifact image
-- Provide description prompt
-- AI generates artifact analysis
+---
+
+## ⚠️ Important Note on Model Selection
+
+Originally, this project was intended to use **Google's Gemini API** for artifact analysis.  
+
+However, due to **billing and free-tier quota limitations**, API requests were blocked (HTTP 429: RESOURCE_EXHAUSTED).  
+
+To ensure a **fully working demo** without API keys or billing, the project was migrated to an **open-source Vision-Language model**:
+
+**Salesforce BLIP (Bootstrapping Language-Image Pretraining)**
+
+This allows the app to run **locally** and **offline**, providing artifact descriptions reliably.
+
+---
+
+## 🧠 Model Used
+
+- **Model:** `Salesforce/blip-image-captioning-base`  
+- **Framework:** Hugging Face Transformers  
+- **Execution:** Local inference (CPU/GPU)
+
+---
+
+## 🛠 Technologies Used
+
+- Python  
+- Streamlit  
+- Hugging Face Transformers  
+- PyTorch  
+- Pillow (for image handling)
+
+---
+
+## 🚀 How to Run the Project
+
+1️⃣ Clone the repository:
+
+```bash
+git clone https://github.com/YOUR_USERNAME/Gemini-Historical-Artifact-Description-App.git
+cd Gemini-Historical-Artifact-Description-App
