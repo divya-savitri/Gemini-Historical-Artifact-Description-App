@@ -18,7 +18,8 @@ def load_model():
 processor, model = load_model()
 
 # Input prompt
-prompt = st.text_input("Describe", "Enter a description prompt for this artifact")
+prompt = "Describe this artifact in 150-200 words with historical and artistic context."
+inputs = processor(images=image, text=prompt, return_tensors="pt")
 
 # File uploader
 uploaded_file = st.file_uploader("Upload Artifact Image", type=["jpg", "jpeg", "png"])
